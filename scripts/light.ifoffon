@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+import jsonrpclib, time, sys
+
+if (len(sys.argv) < 2):
+	sys.exit('Usage: %s node [node node ...]' % sys.argv[0])
+
+nodes = sys.argv ; del nodes[0]
+
+zwave = jsonrpclib.Server("http://localhost:8080")
+for node in nodes:
+	if not zwave.get_switch_state(node): zwave.light_on(node)

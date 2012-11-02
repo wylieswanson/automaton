@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div data-role="page" id="devices" data-theme="a">
+    <div data-role="header">
+        <a href="/" data-rel="home" data-icon="home" data-iconpos="notext">Home</a>
+        <h1>{{ page_title }}</h1>
+        <a href="#main" data-rel="back" data-icon="back" data-iconpos="notext">Back</a>
+    </div>
+    <div data-role="content" data-theme="a">
+        {% if empty is defined %}
+        <h3>No devices found</h3>
+        {% else %}
+        <ul data-role="listview" data-filter="true">
+            {% for item in items %}
+            {% if item.switched_on %} <li data-icon="custom" id="lighton"> {% else %} <li data-icon="custom" id="lightoff"> {% endif %}
+                <a href="{{ item.url|urlize() }}"> {{ item.name }}</a> </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
+
+
+
+
