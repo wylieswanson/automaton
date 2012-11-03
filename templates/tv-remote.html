@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div data-role="page" id="tv" data-theme="a" data-dom-cache="false">
+    <div data-role="header">
+        <a href="/" data-rel="home" data-icon="home" data-iconpos="notext">Home</a>
+        <h1>{{ page_title }}</h1>
+        <a href="#main" data-rel="back" data-icon="back" data-iconpos="notext">Back</a>
+    </div>
+	<div data-role="content" id="remotebuttons">
+		<li data-role="fieldcontain">
+			<label for="source" class="select">Source:</label>
+			<select name="source" id="source">
+				<option value="1">Office</option>
+				<option value="2">Family</option>
+				<option value="3">AppleTV</option>
+			</select>
+		</li>
+		<div class="ui-grid-a">
+			<div class="ui-block-a"> <a href="#info" data-role="button">Info</a> </div>
+			<div class="ui-block-b"> <a href="#osd" data-role="button">OSD</a> </div>
+		</div>
+		<div class="ui-grid-b">
+			<div class="ui-block-a"> <a href="#back" data-role="button" data-icon="back" data-iconpos="top">Back</a> </div>
+			<div class="ui-block-b"> <a href="#up" data-role="button" data-icon="arrow-u" data-iconpos="top">Up</a> </div>
+			<div class="ui-block-c"> <a href="#home" data-role="button" data-icon="home" data-iconpos="top">Home</a> </div>
+		</div>
+		<div class="ui-grid-b">
+			<div class="ui-block-a"> <a href="#left" data-icon="arrow-l" data-iconpos="top" data-role="button">Left</a> </div>
+			<div class="ui-block-b"> <a href="#select" data-icon="check" data-iconpos="top" data-role="button">Select</a> </div>
+			<div class="ui-block-c"> <a href="#right" data-icon="arrow-r" data-iconpos="top" data-role="button">Right</a> </div>
+		</div>
+		<div class="ui-grid-b">
+			<div class="ui-block-a"> <a href="#pause" data-icon="pause" data-iconpos="top" data-role="button">Pause</a> </div>
+			<div class="ui-block-b"> <a href="#down" data-icon="arrow-d" data-iconpos="top" data-role="button">Down</a> </div>
+			<div class="ui-block-c"> <a href="#context" data-role="button" data-iconpos="top">Context</a> </div>
+		</div>
+		<li data-role="fieldcontain">
+			<label for="slider">Volume:</label>
+			<input type="range" name="slider" id="slider" value="0" min="0" max="100"  />
+		</li>
+	</div>
+</div>
+{% endblock %}
+
