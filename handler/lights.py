@@ -4,11 +4,16 @@ from flask import Blueprint, render_template, abort, Response, request, url_for,
 from functools import update_wrapper
 import json, sys
 from pprint import pprint
-
+import datetime
 import jsonrpclib
 
 lights = Blueprint('lights', __name__)
 zwave = jsonrpclib.Server("http://localhost:8080")
+
+#r.headers.add('Last-Modified', datetime.datetime.now())
+#r.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, 
+#post-check=0, pre-check=0')
+#r.headers.add('Pragma', 'no-cache')
 
 def nocache(f):
 	def new_func(*args, **kwargs):
@@ -17,8 +22,15 @@ def nocache(f):
 		return resp
 	return update_wrapper(new_func, f)
 
+@lights.after_request
+def add_no_cache(response):
+	response.cache_control.no_cache = True
+	response.headers.add('Last-Modified', datetime.datetime.now())
+	response.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
+	response.headers.add('Pragma', 'no-cache')
+	return response
+
 @lights.route('/')
-@nocache
 def index():
 	locations=[]
 	for loc in sorted(zwave.all_switch_locations()):
@@ -43,7 +55,6 @@ def index():
 	return render_template('lights.html', items = locations, page_title = "Lights")
 
 @lights.route('/<location>')
-@nocache
 def with_location(location):
 	devices=[]
 	for device in sorted (zwave.all_switches_in_location(location) ):
@@ -54,7 +65,6 @@ def with_location(location):
 		
 
 @lights.route('/<location>/<name>/<node>')
-@nocache
 def with_device(location,name,node):
 	device={}
 	device['location']=location

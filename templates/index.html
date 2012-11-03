@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <!-- Start of #toplevel -->
-<div data-role="page" id="main" data-theme="a">
+<div data-role="page" id="main" data-theme="a" data-dom-cache="false">
 	<div data-role="header">
 		<h1>Automaton</h1>
 	</div>
@@ -10,6 +10,8 @@
 		<ul data-role="listview">
 			<li><a href="/Lights">Lights</a></li>
 			<!-- <li><a href="/Scenes">Scenes</a></li> -->
+			<li><a href="/TV">Television</a></li>
+			<li><a href="remote://">iOS Remote.app</a></li>
 		</ul>
 	</div><!-- /content -->
 </div><!-- /page toplevel -->

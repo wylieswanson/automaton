@@ -1,16 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-
-<script type=text/javascript>
-	$('#_switch').live('pageinit',function(event){
-		$('[data-role="slider"]').on('slidestop', function(evt){
-			var sliderObject = $(evt.target);
-			$.ajax({ url: '/_switch', type: 'POST', data: { id: sliderObject.prop('id'), val: sliderObject.val() }, success: function(data){ }, error: function(){ } });
-		});
-	});
-</script>
-
-<div data-role="page" id="_switch" data-theme='a'>
+<div data-role="page" id="_switch" data-theme='a' data-dom-cache="false">
 	<div data-role="header">
 		<a href="/" data-icon="home" data-iconpos="notext">Home</a>
 		<h1>{{ device.location }}</h1>
