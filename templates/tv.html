@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div data-role="page" id="tv" data-theme="a" data-dom-cache="false">
-    <div data-role="header">
+    <div data-role="header" data-position="fixed">
         <a href="/" data-rel="home" data-icon="home" data-iconpos="notext">Home</a>
         <h1>{{ page_title }}</h1>
         <a href="#main" data-rel="back" data-icon="back" data-iconpos="notext">Back</a>
@@ -9,7 +9,12 @@
 	<div data-role="content" >
 		<ul data-role="listview">
 			<li><a href="/TV/Remote">Remote Control</a></li>
+			<li><a href="/TV/Recordings">Programmed TV Recordings</a></li>
+			<li><a href="/TV/LiveTV">Live TV Recordings</a></li>
 		</ul>
 	</div><!-- /content -->
+   <div data-role="footer" data-position="fixed">
+      <h1>Fixed Footer!</h1>
+   </div>
 </div><!-- /page toplevel -->
 {% endblock %}

@@ -2,7 +2,7 @@
 {% block content %}
 <!-- Start of #toplevel -->
 <div data-role="page" id="main" data-theme="a" data-dom-cache="false">
-	<div data-role="header">
+	<div data-role="header" data-position="fixed">
 		<h1>Automaton</h1>
 	</div>
 
@@ -14,5 +14,8 @@
 			<li><a href="remote://">iOS Remote.app</a></li>
 		</ul>
 	</div><!-- /content -->
+   <div data-role="footer" data-position="fixed">
+      <h1>Fixed Footer!</h1>
+   </div>
 </div><!-- /page toplevel -->
 {% endblock %}

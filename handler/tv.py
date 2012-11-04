@@ -5,10 +5,11 @@ from functools import update_wrapper
 import json, sys
 from pprint import pprint
 
-import xbmcjsonlib
+import xbmcjsonlib, jsonrpclib
 
 tv = Blueprint('tv', __name__)
 xbmc = xbmcjsonlib.Server("http://jetway.pv.pingzero.net:8090/jsonrpc")
+myth = jsonrpclib.Server("http://craft.pv.pingzero.net:8765")
 
 @tv.route('/')
 def index():
@@ -38,3 +39,17 @@ def key():
 @tv.route('/Remote')
 def remote():
 	return render_template("tv-remote.html", page_title = "Remote Control", scale='0.7')
+
+@tv.route('/Recordings')
+def recordings():
+	items = myth.recordings()
+	if len(items)==0:
+		return render_template('tv-recordings.html', empty=True, page_title = 'Programmed TV Recordings', scale='0.7')
+	return render_template('tv-recordings.html', items = items, page_title = 'Programmed TV Recordings', scale='0.7')
+
+@tv.route('/LiveTV')
+def livetv():
+	items = myth.livetv()
+	if len(items)==0:
+		return render_template('tv-recordings.html', empty=True, page_title = 'Live TV Recordings', scale='0.7')
+	return render_template('tv-recordings.html', items = items, page_title = 'Live TV Recordings', scale='0.7')

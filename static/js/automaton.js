@@ -20,3 +20,4 @@ $('#_switch').live('pageinit',function(event){
 		});
 	});
 });
+

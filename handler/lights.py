@@ -33,45 +33,63 @@ def add_no_cache(response):
 @lights.route('/')
 def index():
 	locations=[]
-	for loc in sorted(zwave.all_switch_locations()):
+	for loc in sorted(zwave.get_switches_locations()):
 		location={}
 		location['location']=loc
 		location['url']=url_for('.with_location', location=loc)
 
-		switches = sorted(zwave.all_switches_in_location(loc))
-		num_on = 0 ; num_off = 0
+		num_on = 0 ; num_off = 0 ; lights = 0
+
+		switches = sorted(zwave.get_switches_from_location(loc))
 		for switch in switches:
+			lights += 1
 			if switch['state']: num_on += 1
 			else: num_off += 1
 
-		location['num_switches']=len( switches )
-		location['has_switches_on']=(num_on>0)
-		location['num_switches_on']=num_on
-		location['num_switches_off']=num_off
+		dimmers = sorted(zwave.get_dimmers_from_location(loc))
+		for dimmer in dimmers:
+			lights += 1
+			if dimmer['level']>0: num_on += 1
+			else: num_off += 1
+
+		location['num_lights']=lights
+		location['num_lights_on']=num_on
+		location['num_lights_off']=num_off
+		location['has_lights_on']=(num_on>0)
 		locations.append(location)
-	if not len(locations):
-		return render_template("lights.html", empty = True, page_title = "Lights")
-	pprint(locations)
-	return render_template('lights.html', items = locations, page_title = "Lights")
+	if lights == 0:
+		return render_template("locations.html", empty = True, page_title = "Lights")
+	return render_template('locations.html', items = locations, page_title = "Lights")
 
 @lights.route('/<location>')
 def with_location(location):
-	devices=[]
-	for device in sorted (zwave.all_switches_in_location(location) ):
-		device['url'] = url_for('.with_device',location=location, name=device['name'], node=device['node'])
-		device['switched_on'] = device['state']
-		devices.append(device)
-		return render_template('devices.html', items = devices, page_title=location)
+	lights=[]
+	for light in sorted (zwave.get_lights_from_location(location) ):
+		if light.has_key("state"):
+			light['switched_on'] = light['state']
+			light['url'] = url_for('.with_switch',location=location, name=light['name'], node=light['node'])
+		else:
+			light['switched_on'] = light['level']>0
+			light['url'] = url_for('.with_dimmer',location=location, name=light['name'], node=light['node'], level=light['level'])
+
+		lights.append(light)
+	return render_template('lights.html', items = lights, page_title=location)
 		
 
 @lights.route('/<location>/<name>/<node>')
-def with_device(location,name,node):
+def with_switch(location,name,node):
 	device={}
 	device['location']=location
 	device['name']=name
 	device['node']=node
 	device['on']=zwave.get_switch_state( device['node'] )
-
-
 	return render_template('switch.html', device=device)
 
+@lights.route('/<location>/<name>/<node>/<level>')
+def with_dimmer(location,name,node,level):
+	device={}
+	device['location']=location
+	device['name']=name
+	device['node']=node
+	device['on']=zwave.get_switch_state( device['node'] )
+	return render_template('dimmer.html', device=device)
