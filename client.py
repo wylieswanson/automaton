@@ -56,13 +56,13 @@ def dimmers_info():
 # print zwave.print_nodes()
 
 #print zwave.print_all_lights()
-#print zwave.print_all_dimmers()
+print zwave.print_all_dimmers()
 
 print "------------------------------------------------------------"
 switches_info()
 print "------------------------------------------------------------"
 dimmers_info()
-print "------------------------------------------------------------"
+#print "------------------------------------------------------------"
 
 #zwave.all_lights_off()
 #time.sleep(1.0)
@@ -78,10 +78,12 @@ print "------------------------------------------------------------"
 #time.sleep(5)
 #zwave.set_dimmer(13,0)
 #time.sleep(5)
-#zwave.set_dimmer(13,255)
-zwave.set_dimmer(13,0)
+#print zwave.set_dimmer(13,0)
+#time.sleep(3)
+# zwave.set_dimmer(13,0)
+#print zwave.get_dimmer_level(13)
 
-unique_locations()
+# unique_locations()
 
 #print zwave.get_switch_state(3)
 #print zwave.get_switch_state(7)

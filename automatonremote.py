@@ -7,12 +7,15 @@ from handler.tv import tv
 from functools import update_wrapper
 import jsonrpclib, datetime
 
-# from handler.videos import videos
-# from handler.recordings import recordings
-# from handler.remote import remote
-# from handler.settings import settings
+from flask.ext.basicauth import BasicAuth
 
 app = Flask(__name__)
+
+app.config['BASIC_AUTH_USERNAME'] = 'swanson'
+app.config['BASIC_AUTH_PASSWORD'] = 'datamaersk'
+app.config['BASIC_AUTH_FORCE'] = True
+basic_auth = BasicAuth(app)
+
 app.register_blueprint(lights, url_prefix='/Lights')
 app.register_blueprint(tv, url_prefix='/TV')
 
@@ -30,6 +33,28 @@ def add_no_cache(response):
 	response.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
 	response.headers.add('Pragma', 'no-cache')
 	return response
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+	error = None
+	if request.method == 'POST':
+		if request.form['username'] != app.config['USERNAME']:
+			error = 'Invalid username'
+		elif request.form['password'] != app.config['PASSWORD']:
+			error = 'Invalid password'
+		else:
+			session['logged_in'] = True
+			flash('You were logged in')
+			return redirect(url_for('show_entries'))
+	return render_template('login.html', error=error)
+
+@app.route('/logout')
+def logout():
+	session.pop('logged_in', None)
+	flash('You were logged out')
+	return redirect(url_for('show_entries'))
+
 
 @app.route('/_switch', methods=['POST', 'GET'])
 @nocache
@@ -55,5 +80,4 @@ def root():
 
 if __name__ == "__main__":
 	app.debug = True
-	app.run(host='0.0.0.0', port=80)
-	# app.run(host='0.0.0.0', port=5678)
+	app.run(host='0.0.0.0', port=5678)

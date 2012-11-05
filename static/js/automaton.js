@@ -9,15 +9,27 @@ $("#remotebuttons a").live("tap", function(){
 	});
 });
 
-$('#_switch').live('pageinit',function(event){
-	$('[data-role="slider"]').on('slidestop', function(evt){
-		var sliderObject = $(evt.target);
-		$.ajax({ 
-			url: '/_switch', type: 'POST', 
-			data: { id: sliderObject.prop('id'), val: sliderObject.val() }, 
-			success: function(data){ }, 
-			error: function(){ } 
+
+$(document).live('pageinit', function(){
+		// alert('hi')
+		$('[group-name="switch_toggle"]').on( 'slidestop', function(event){
+			var lightObject = $(event.target);
+			action = 'flip';
+			state = $('#switch').val();
+			node = lightObject.attr('device-node');
+			device = lightObject.attr('device-type');
+			id = lightObject.prop('id');
+			$.ajax({ cache: false, type: "POST", url: "/Lights/Adjust", data: { id: id, action: action, node: node, state: state, device: device } }).done(function( msg ) { });
+			// alert( device + node + state );
+		});
+		$('[group-name="dimmer"]').on('slidestop', function(event){
+			var lightObject = $(event.target);
+			action = 'dim';
+			level = $('#dimmer').val();
+			node = lightObject.attr('device-node');
+			device = lightObject.attr('device-type');
+			id = lightObject.prop('id');
+			$.ajax({ cache: false, type: "POST", url: "/Lights/Adjust", data: { id: id, action: action, level: level, node: node, device: device } }).done(function( msg ) { });
+			// alert( device + ' ' + node + ' to ' + level );
 		});
 	});
-});
-

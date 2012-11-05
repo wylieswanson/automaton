@@ -183,6 +183,7 @@ class ZWaveManager():
 					switch = {}
 					switch['name']=self.network.nodes[node].name
 					switch['node']=node
+					switch['type']='switch'
 					switch['state']=self.network.nodes[node].get_switch_state(val)
 					switches.append( switch  )
 		return switches
@@ -195,8 +196,10 @@ class ZWaveManager():
 				if self.network.nodes[node].location == location:
 					dimmer = {}
 					dimmer['name']=self.network.nodes[node].name
+					dimmer['type']='dimmer'
 					dimmer['node']=node
 					dimmer['level']=self.network.nodes[node].get_dimmer_level(val)
+					dimmer['state']=dimmer['level']>0
 					dimmers.append( dimmer)
 		return dimmers
 
@@ -212,6 +215,11 @@ class ZWaveManager():
 		node=int(node)
 		for val in self.network.nodes[node].get_switches():
 			return self.network.nodes[node].get_switch_state(val)
+	
+	def get_dimmer_level( self, node ):
+		node=int(node)
+		for val in self.network.nodes[node].get_dimmers():
+			return self.network.nodes[node].get_dimmer_level(val)
 
 	def light_on(self,node):
 		node=int(node)
@@ -228,6 +236,7 @@ class ZWaveManager():
 		node=int(node)
 		level=int(level)
 		for val in self.network.nodes[node].get_dimmers() : self.network.nodes[node].set_dimmer(val,level)
+		print "Node %s, Dimmer set to %s" % (str(node), str(level))
 
 
 	def all_lights_on(self):
@@ -315,6 +324,7 @@ def main():
 	server.register_function(zwave.test)
 	
 	server.register_function(zwave.get_switch_state)
+	server.register_function(zwave.get_dimmer_level)
 
 	print "Starting network."
 

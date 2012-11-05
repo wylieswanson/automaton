@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint, render_template, abort, Response, request, url_for, make_response
+from flask import Blueprint, render_template, abort, Response, request, url_for, make_response, jsonify
 from functools import update_wrapper
 import json, sys
 from pprint import pprint
@@ -9,11 +9,6 @@ import jsonrpclib
 
 lights = Blueprint('lights', __name__)
 zwave = jsonrpclib.Server("http://localhost:8080")
-
-#r.headers.add('Last-Modified', datetime.datetime.now())
-#r.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, 
-#post-check=0, pre-check=0')
-#r.headers.add('Pragma', 'no-cache')
 
 def nocache(f):
 	def new_func(*args, **kwargs):
@@ -40,6 +35,7 @@ def index():
 
 		num_on = 0 ; num_off = 0 ; lights = 0
 
+		pprint( sorted(zwave.get_lights_from_location(loc)) )
 		switches = sorted(zwave.get_switches_from_location(loc))
 		for switch in switches:
 			lights += 1
@@ -61,6 +57,40 @@ def index():
 		return render_template("locations.html", empty = True, page_title = "Lights")
 	return render_template('locations.html', items = locations, page_title = "Lights")
 
+
+@lights.route('/Adjust', methods=['POST', 'GET'])
+@nocache
+def adjust():
+	error = None
+	if request.method == 'POST':
+		pprint(request.form)
+		id = request.form['id']
+		node = request.form['node']
+		device = request.form['device']
+		action = request.form['action']
+
+		if (device=='switch'):
+			state = request.form['state']
+			if (state=='on'): 
+				zwave.light_on(node)
+			else: 
+				zwave.light_off(node)
+
+		elif (device=='dimmer'):
+			if (action=='flip'):
+				state = request.form['state']
+				if (state=='on'):
+					zwave.set_dimmer(node,255)
+				else:
+					zwave.set_dimmer(node,0)
+			elif (action=='dim'):
+				level = request.form['level']
+				zwave.set_dimmer(node,level)
+
+	return jsonify(result=1)
+
+
+"""
 @lights.route('/<location>')
 def with_location(location):
 	lights=[]
@@ -73,8 +103,17 @@ def with_location(location):
 			light['url'] = url_for('.with_dimmer',location=location, name=light['name'], node=light['node'], level=light['level'])
 
 		lights.append(light)
+	return render_template('light.html', items = lights, page_title=location)
+"""
+	
+@lights.route('/<location>')
+def with_location(location):
+	lights=[]
+	for light in sorted(zwave.get_lights_from_location(location) ):
+		lights.append(light)
 	return render_template('lights.html', items = lights, page_title=location)
-		
+
+
 
 @lights.route('/<location>/<name>/<node>')
 def with_switch(location,name,node):
