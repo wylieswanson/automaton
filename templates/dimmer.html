@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div data-role="page" id="_dimmer" data-theme='a' data-dom-cache="false">
+	<div data-role="header" data-position="fixed">
+		<a href="/" data-icon="home" data-iconpos="notext">Home</a>
+		<h1>{{ device.location }}</h1>
+		<a href="#main" data-rel="back" data-icon="back" data-iconpos="notext">Back</a>
+	</div>
+	<div data-role="content">
+		<label for="_dimmer_{{ device.node }}">{{ device.name }}</label>
+		<select name="_dimmer_{{ device.node }}" id="_dimmer_{{ device.node }}" data-role="slider">
+			<option value="off" {% if not device.on %}selected{% endif %}>Off</option>
+			<option value="on" {% if device.on %}selected{% endif %}>On</option>
+		</select> 
+
+		<div data-role="fieldcontain"> {{ device.name }}
+		<input type="range" name="z_ceiling_cans" id="z_ceiling_cans" value="{{ device.level }}" min="0" max="99" step="1" data-highlight="true" />
+		</div>
+
+	</div>
+   <div data-role="footer" data-position="fixed">
+      <h1>Fixed Footer!</h1>
+   </div>
+</div>
+{% endblock %} 

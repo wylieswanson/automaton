@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div data-role="page" id="recordings" data-theme="a" data-dom-cache="false">
+    <div data-role="header" data-position="fixed">
+        <a href="/" data-rel="home" data-icon="home" data-iconpos="notext">Home</a>
+        <h1>{{ page_title }}</h1>
+        <a href="#main" data-rel="back" data-icon="back" data-iconpos="notext">Back</a>
+    </div>
+    <div data-role="content" data-theme="a">
+        {% if empty is defined %}
+        <h4>No recordings found</h4>
+        {% else %}
+        <ul data-role="listview" data-theme="d" data-divider-theme="d" data-filter="true">
+            {% for item in items %}
+				<li> <a href="{{ item.url|urlize() }}">
+				<h3>{{ item.title }}</h3><p><strong>{{ item.subtitle }}</strong></p>
+				<p>{{ item.description }}</p><p class="ui-li-aside"><strong>12:00</strong>PM</p>
+				</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+   <div data-role="footer" data-position="fixed">
+      <h1>Fixed Footer!</h1>
+   </div>
+</div>
+{% endblock %} 
