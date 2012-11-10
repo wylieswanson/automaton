@@ -1,9 +1,0 @@
-#lighton .ui-icon-custom {
-background-image: url("/static/css/images/on.png");
-background-position: 2px 1px;
-background-size: 90%; }
-
-#lightoff .ui-icon-custom {
-background-image: url("/static/css/images/off.png");
-background-position: 2px 1px;
-background-size: 90%; }

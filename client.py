@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
+import operator
 import jsonrpclib, time
 from pprint import pprint
 
-zwave = jsonrpclib.Server("http://localhost:8080")
+ozw = jsonrpclib.Server("http://localhost:8080")
 
 def f7(seq):
 	seen = set()
@@ -12,15 +13,15 @@ def f7(seq):
 
 def unique_locations():
 	locations=[]
-	for location in zwave.get_switches_locations(): locations.append(location)
-	for location in zwave.get_dimmers_locations(): locations.append(location)
+	for location in ozw.get_switches_locations(): locations.append(location)
+	for location in ozw.get_dimmers_locations(): locations.append(location)
 	pprint( sorted( f7(locations) ) )
 
 def switches_info():
-	locations = sorted (zwave.get_switches_locations() )
+	locations = sorted (ozw.get_switches_locations() )
 	pprint(locations)
 	for location in locations:
-		switches = sorted (zwave.get_switches_from_location(location) )
+		switches = sorted (ozw.get_switches_from_location(location) )
 		num_switches_on = 0
 		num_switches_off = 0
 		for switch in switches:
@@ -30,10 +31,10 @@ def switches_info():
 		print "%s: on=%s, off=%s" % (location, num_switches_on,num_switches_off)
 
 def dimmers_info():
-	locations = sorted (zwave.get_dimmers_locations() )
+	locations = sorted (ozw.get_dimmers_locations() )
 	pprint(locations)
 	for location in locations:
-		dimmers = sorted (zwave.get_dimmers_from_location(location) )
+		dimmers = sorted (ozw.get_dimmers_from_location(location) )
 		num_dimmers_on = 0
 		num_dimmers_off = 0
 		for dimmer in dimmers:
@@ -42,48 +43,80 @@ def dimmers_info():
 			# pprint(switch)
 		print "%s: on=%s, off=%s" % (location, num_dimmers_on,num_dimmers_off)
 
-#print zwave.ozw_library_version(),
-#print zwave.python_ozw_library_version(),
-#print zwave.zw_library_version(),
-#print zwave.home_id()
-#print zwave.controller_node_id(),
-#print zwave.controller_node_version(),
-#print zwave.nodes()
-#print zwave.controller_capabilities() # error	
-#print zwave.controller_node_capabilities() # error
-#print zwave.controller_stats()
+#print ozw.ozw_library_version(),
+#print ozw.python_ozw_library_version(),
+#print ozw.zw_library_version(),
+#print ozw.home_id()
+#print ozw.controller_node_id(),
+#print ozw.controller_node_version(),
+#print ozw.nodes()
+#print ozw.controller_capabilities() # error	
+#print ozw.controller_node_capabilities() # error
+#print ozw.controller_stats()
 
-# print zwave.print_nodes()
+# print ozw.print_nodes()
 
-#print zwave.print_all_lights()
-print zwave.print_all_dimmers()
+#print ozw.print_all_lights()
+#print ozw.print_all_dimmers()
 
-print "------------------------------------------------------------"
-switches_info()
-print "------------------------------------------------------------"
-dimmers_info()
+#print "------------------------------------------------------------"
+#switches_info()
+#print "------------------------------------------------------------"
+#dimmers_info()
 #print "------------------------------------------------------------"
 
-#zwave.all_lights_off()
+#ozw.all_lights_off()
 #time.sleep(1.0)
-#zwave.all_lights_on()
+#ozw.all_lights_on()
 
-#print zwave.test()
+#print ozw.test()
 
-#zwave.light_on(2)
+#ozw.light_on(6)
 #time.sleep(3.0)
-#zwave.light_on(8)
+#ozw.light_on(8)
 
-#zwave.set_dimmer(13,25)
+#ozw.set_dimmer(13,25)
 #time.sleep(5)
-#zwave.set_dimmer(13,0)
+#ozw.set_dimmer(13,0)
 #time.sleep(5)
-#print zwave.set_dimmer(13,0)
+#print ozw.set_dimmer(13,0)
 #time.sleep(3)
-# zwave.set_dimmer(13,0)
-#print zwave.get_dimmer_level(13)
+# ozw.set_dimmer(13,0)
+#print ozw.get_dimmer_level(13)
 
 # unique_locations()
 
-#print zwave.get_switch_state(3)
-#print zwave.get_switch_state(7)
+#print ozw.get_switch_state(3)
+#print ozw.get_switch_state(7)
+
+#unique_locations()
+
+#pprint ( ozw.get_switches_dimmers_locations() )
+
+lights = ozw.get_switches_dimmers()
+#pprint( ozw.get_switches_dimmers() )
+
+pprint(lights)
+print "---"
+
+sorted_locations= sorted( lights, key=operator.itemgetter('location'))
+seen = set()
+seen_add = seen.add
+
+print "---"
+unique_locations=[]
+for location in sorted_locations:
+	if location['location'] not in seen and not seen_add(location['location']):
+		unique_locations.append(location['location'])
+pprint(unique_locations)
+print "---"
+
+for location in unique_locations:
+	num_lights_location=0 ; num_on_location=0
+	for specific_light in sorted_locations:
+		if specific_light['location'] in location:
+			num_lights_location += 1
+			if specific_light['state']==True or specific_light['level']>0:  num_on_location += 1
+	print "%s (lights, #on) = %s/%s" % (location, str(num_lights_location), str(num_on_location))
+	
+	

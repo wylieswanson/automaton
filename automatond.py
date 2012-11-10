@@ -6,6 +6,7 @@ import os, sys, logging, time
 
 from SocketServer import ThreadingMixIn
 from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
+import json
 
 logging.getLogger('openzwave').addHandler(logging.NullHandler())
 #logging.basicConfig(level=logging.INFO)
@@ -42,8 +43,10 @@ class ZWaveManager():
 		options.set_logging(True)
 		options.lock()
 
+		print "Initialize Z-Wave network"
 		self.network = ZWaveNetwork(options, log=None)
 
+		print "Wait for driver"
 		# Waiting for driver
 		for i in range(0,20):
 			if self.network.state>=self.network.STATE_INITIALISED: break
@@ -53,6 +56,7 @@ class ZWaveManager():
 			print "Can't initialise driver! Look at the logs in OZW_Log.log"
 			quit(1)
 	
+		print "Wait for network ready"
 		# Waiting for network ready
 		for i in range(0,90):
 			if self.network.state>=self.network.STATE_READY: break
@@ -60,6 +64,12 @@ class ZWaveManager():
 		if not self.network.is_ready:
 			print "Can't start network! Look at the logs in OZW_Log.log"
 			quit(2)
+
+	def f7(self, seq):
+		seen = set()
+		seen_add = seen.add
+		return [ x for x in seq if x not in seen and not seen_add(x)]
+		
 
 	def print_nodes(self):
 		for node in self.network.nodes:
@@ -145,27 +155,59 @@ class ZWaveManager():
 				self.network.nodes[node].values[val].help))
 				print("  level: %s" % (self.network.nodes[node].get_dimmer_level(val)))
 
-	def get_switches_locations(self):
-		values = {}
-		locations = []
+	def get_switches_dimmers(self):
+		values = {} ; locations = []
 		for node in self.network.nodes:
-			for val in self.network.nodes[node].get_switches() :
-				locations.append(self.network.nodes[node].location)
+			for val in self.network.nodes[node].get_switches() : 
+				loc={}
+				loc['node']=node
+				loc['name']=self.network.nodes[node].name
+				loc['location']=self.network.nodes[node].location
+				loc['version']=self.network.nodes[node].version
+				loc['index']=self.network.nodes[node].values[val].index
+				loc['instance']=self.network.nodes[node].values[val].instance
+				loc['label']=self.network.nodes[node].values[val].label
+				loc['help']=self.network.nodes[node].values[val].help
+				loc['id']=self.network.nodes[node].values[val].id_on_network
+				loc['level']=self.network.nodes[node].get_dimmer_level(val)
+				loc['state']=self.network.nodes[node].get_switch_state(val)
+				locations.append(loc)
+			for val in self.network.nodes[node].get_dimmers() : 
+				loc={}
+				loc['node']=node
+				loc['name']=self.network.nodes[node].name
+				loc['location']=self.network.nodes[node].location
+				loc['version']=self.network.nodes[node].version
+				loc['index']=self.network.nodes[node].values[val].index
+				loc['instance']=self.network.nodes[node].values[val].instance
+				loc['label']=self.network.nodes[node].values[val].label
+				loc['help']=self.network.nodes[node].values[val].help
+				loc['id']=self.network.nodes[node].values[val].id_on_network
+				loc['level']=self.network.nodes[node].get_dimmer_level(val)
+				loc['state']=self.network.nodes[node].get_switch_state(val)
+				locations.append(loc)
+
+		return locations
+
+	def get_switches_dimmers_locations(self):
+		values = {} ; locations = []
+		for node in self.network.nodes:
+			for val in self.network.nodes[node].get_switches() : locations.append(self.network.nodes[node].location)
+			for val in self.network.nodes[node].get_dimmers() : locations.append(self.network.nodes[node].location)
+		return sorted( self.f7(locations) )
+
+	def get_switches_locations(self):
+		values = {} ; locations = []
+		for node in self.network.nodes:
+			for val in self.network.nodes[node].get_switches() : locations.append(self.network.nodes[node].location)
 		return locations
 
 	def get_dimmers_locations(self):
-		values = {}
-		locations = []
+		values = {} ; locations = []
 		for node in self.network.nodes:
-			for val in self.network.nodes[node].get_dimmers() :
-				locations.append(self.network.nodes[node].location)
+			for val in self.network.nodes[node].get_dimmers() : locations.append(self.network.nodes[node].location)
 		return locations
 
-	def f7(self, seq):
-		seen = set()
-		seen_add = seed.add
-		return [ x for x in seq if x not in seen and not seen_add(x)]
-		
 	def get_lights_locations(self):
 		locations=[]
 		for location in self.get_switches_locations(): locations.append(location)
@@ -235,7 +277,10 @@ class ZWaveManager():
 		#  level : a value between 0-99 or 255. 255 set the level to the last value. 0 turn the dimmer off
 		node=int(node)
 		level=int(level)
-		for val in self.network.nodes[node].get_dimmers() : self.network.nodes[node].set_dimmer(val,level)
+		for val in self.network.nodes[node].get_dimmers() : 
+			self.network.nodes[node].set_dimmer(val,level)
+			self.network.nodes[node].set_dimmer(val,level)
+			self.network.nodes[node].set_dimmer(val,level)
 		print "Node %s, Dimmer set to %s" % (str(node), str(level))
 
 
@@ -325,7 +370,8 @@ def main():
 	
 	server.register_function(zwave.get_switch_state)
 	server.register_function(zwave.get_dimmer_level)
-
+	server.register_function(zwave.get_switches_dimmers_locations)
+	server.register_function(zwave.get_switches_dimmers)
 	print "Starting network."
 
 	print "Network started."

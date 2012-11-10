@@ -1,34 +1,26 @@
-{% extends "base.html" %}
+{% extends "layout.html" %}
+
+{% block pageid -%}{{ super() }}-login{% endblock pageid %}
+{% block header %}
+   <div data-role="header" data-position="fixed">
+      <h1>Automaton</h1>
+   </div>
+{% endblock %}
+
 {% block content %}
-
-
-
-<div data-role="page" id="devices" data-theme="a" data-dom-cache="false">
-    <div data-role="header" data-position="fixed">
-        <h1>Login</h1>
-    </div>
-    <div data-role="content">
- 		 {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-
-		<form action="{{ url_for('login') }}" method="post" class="ui-body ui-body-a ui-corner-all">
+		<form action="{{ action }}" method="post" class="ui-body ui-body-a ui-corner-all">
 				<div data-role="fieldcontain">
-					<label for="basic">Login:</label>
-					<input type="text" name="login" id="basic" value=""  />
+					<label for="basic">Username:</label>
+					<input type="text" name="username" id="basic" value=""  />
 				</div>
 				<div data-role="fieldcontain">
 					<label for="password">Password:</label>
 					<input type="password" name="password" id="password" value="" />
 				</div>
-				<button type="submit" data-mini='true' data-theme="a" name="submit" value="submit-value">Submit</button>
+				<input type="hidden" name=remember value=yes>
+				<button type="submit" value="Login">Login</button>
 		</form>
-
-	<div data-role="footer" data-position="fixed">
-		<h1>Copyright 2012 &copy; PingZero.Networks</h1>
-	</div>
-</div>
-
-{% endblock %} 
-
-
-
-
+{% endblock content %}
+ 
+{% block footer %}
+{% endblock %}

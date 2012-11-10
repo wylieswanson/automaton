@@ -1,22 +1,33 @@
-{% extends "base.html" %}
+{% extends "layout.html" %}
+
+{% block pageid -%}{{ super() }}-locations{% endblock pageid %}
+{% block header %}
+   <div data-role="header" data-position="fixed">
+		<a href="#main" data-rel="back" data-icon="back" data-iconpos="notext">Back</a>
+      <h1>{{ page_title }}</h1>
+		<a href="/" data-rel="home" data-icon="home" data-iconpos="notext">Home</a>
+      <div data-role="navbar">
+         <ul>
+            <li><a href='{{ url_for('.index') }}'>Lights</a></li>
+            <li><a href='{{ url_for('.scenes') }}'>Scenes</a></li>
+            <li><a href='{{ url_for('.status') }}'>Status</a></li>
+         </ul>
+      </div>
+   </div>
+{% endblock header %}
+
+
 {% block content %}
-<div data-role="page" id="lights" data-theme="a" data-dom-cache="false">
-    <div data-role="header" data-position="fixed">
-        <a href="/" data-rel="home" data-icon="home" data-iconpos="notext">Home</a>
-        <h1>{{ page_title }}</h1>
-        <a href="#main" data-rel="back" data-icon="back" data-iconpos="notext">Back</a>
-    </div>
-    <div data-role="content" data-theme="a">
         {% if empty is defined %}
         <h3>No lights found</h3>
         {% else %}
         <ul data-role="listview" data-filter="true">
             {% for item in items %}
 				<li><a href="{{ item.url|urlize() }}">
-            {% if item.has_lights_on %} 
-					<img src="/static/css/images/on.png" alt="On" class="ui-li-icon">
+            {% if item.num_on > 0 %} 
+					<img src="{{ url_for('static', filename='images/on.png') }}" alt="On" class="ui-li-icon">
 				{% else %} 
-					<img src="/static/css/images/off.png" alt="Off" class="ui-li-icon">
+					<img src="{{ url_for('static', filename='images/off.png') }}" alt="Off" class="ui-li-icon">
 				{% endif %}
 				 {{ item.location }} 
 				<span class="ui-li-count">{{ item.num_lights }}</span>
@@ -24,9 +35,4 @@
             {% endfor %}
         </ul>
         {% endif %}
-    </div>
-   <div data-role="footer" data-position="fixed">
-      <h1>Fixed Footer!</h1>
-   </div>
-</div>
-{% endblock %} 
+{% endblock content %} 
