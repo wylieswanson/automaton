@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block pageid -%}{{ super() }}-locations{% endblock pageid %}
+{% block header %}
+   <div data-role="header" data-position="fixed">
+      <a href="#main" data-rel="back" data-icon="back" data-iconpos="notext">Back</a>
+      <h1>{{ page_title }}</h1>
+      <a href="/" data-rel="home" data-icon="home" data-iconpos="notext">Home</a>
+      <div data-role="navbar">
+         <ul>
+            <li><a href='{{ url_for('.index') }}'>Lights</a></li>
+            <li><a href='{{ url_for('.scenes') }}'>Scenes</a></li>
+            <li><a href='{{ url_for('.status') }}'>Status</a></li>
+         </ul>
+      </div>
+   </div>
+{% endblock header %}
+
+{% block content %}
+		{% if empty is defined %}
+			<h3>No scenes found</h3>
+		{% else %}
+			<h3>No scenes found</h3>
+		{% endif %}
+{% endblock content %} 
+
+{% block footer %}
+	<div date-role="footer" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+            <li><a href='{{ url_for('.index') }}'>Snapshot</a></li>
+				<li><a href='{{ url_for('.alloff') }}'>All lights off</a></li>
+			</ul>
+		</div>
+	</div>
+{% endblock footer %}
+
+
+
+

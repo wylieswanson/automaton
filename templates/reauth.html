@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block pageid -%}{{ super() }}-reauth{% endblock pageid %}
+{% block header %}
+   <div data-role="header" data-position="fixed">
+      <h1>Automaton</h1>
+   </div>
+{% endblock header %}
+
+{% block content %}
+  <h2>Reauthenticate</h2>
+  <form action="" method=post>
+    <p>Click this button to reauthenticate: <input type=submit value=Reauthenticate>
+  </form>
+{% endblock content %}

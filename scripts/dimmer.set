@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+import jsonrpclib, time, sys
+
+if (len(sys.argv) < 2):
+	sys.exit('Usage: %s node:dimmer [node:dimmer node:dimmer ...]' % sys.argv[0])
+
+nodes = sys.argv ; del nodes[0]
+
+zwave = jsonrpclib.Server("http://localhost:8080")
+for node in nodes:
+	nodedim=node.split(':')
+	zwave.set_dimmer(nodedim[0],nodedim[1])

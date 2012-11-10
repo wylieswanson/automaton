@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<style>
+iframe { border: none; }
+
+#popupPanel-popup {
+	right: 0 !important;
+	left: auto !important;
+}
+#popupPanel {
+	width: 200px;
+	border: 1px solid #000;
+	border-right: none;
+	background: rgba(0,0,0,.5);
+	margin: -1px 0;
+}
+#popupPanel .ui-btn {
+	margin: 2em 15px;
+}
+</style>
+<script>
+// popup examples
+$( document ).on( "pageinit", function() {
+
+	$( ".photopopup" ).on({
+		popupbeforeposition: function() {
+			var maxHeight = $( window ).height() - 60 + "px";
+			$( ".photopopup img" ).css( "max-height", maxHeight );
+		}
+	});
+
+	function scale( width, height, padding, border ) {
+		var scrWidth = $( window ).width() - 30,
+			scrHeight = $( window ).height() - 30,
+			ifrPadding = 2 * padding,
+			ifrBorder = 2 * border,
+			ifrWidth = width + ifrPadding + ifrBorder,
+			ifrHeight = height + ifrPadding + ifrBorder,
+			h, w;
+
+		if ( ifrWidth < scrWidth && ifrHeight < scrHeight ) {
+			w = ifrWidth;
+			h = ifrHeight;
+		} else if ( ( ifrWidth / scrWidth ) > ( ifrHeight / scrHeight ) ) {
+			w = scrWidth;
+			h = ( scrWidth / ifrWidth ) * ifrHeight;
+		} else {
+			h = scrHeight;
+			w = ( scrHeight / ifrHeight ) * ifrWidth;
+		}
+		
+		return {
+			'width': w - ( ifrPadding + ifrBorder ),
+			'height': h - ( ifrPadding + ifrBorder )
+		};
+	};
+
+	$( ".ui-popup iframe" )
+		.attr( "width", 0 )
+		.attr( "height", "auto" );
+
+
+	$( "#popupVideo" ).on({
+		popupbeforeposition: function() {
+			// call our custom function scale() to get the width and height 
+			var size = scale( 497, 298, 15, 1 ),
+				w = size.width,
+				h = size.height;
+
+			$( "#popupVideo iframe" )
+				.attr( "width", w )
+				.attr( "height", h );
+		},
+		popupafterclose: function() {
+			$( "#popupVideo iframe" )
+				.attr( "width", 0 )
+				.attr( "height", 0 );	
+		}
+	});
+
+	 
+	$( "#popupPanel" ).on({
+		popupbeforeposition: function() {
+			var h = $( window ).height();
+			
+			$( "#popupPanel" )
+				.css( "height", h );
+		}
+	});
+		 
+	$( "#popupPanel button" ).on( "click", function() {	
+		$( "#popupPanel" ).popup('close');
+	});
+
+});
+</script>
+{% endblock head %}
+
+{% block pageid -%}{{ super() }}-locations{% endblock pageid %}
+{% block header %}
+   <div data-role="header" data-position="fixed">
+		<a href="#main" data-rel="back" data-icon="back" data-iconpos="notext">Back</a>
+      <h1>{{ page_title }}</h1>
+		<a href="/" data-rel="home" data-icon="home" data-iconpos="notext">Home</a>
+   </div>
+{% endblock header %}
+
+{% block content %}
+	{% if empty is defined %}
+		<h3>No cameras found</h3>
+	{% else %}
+			<ul data-role="listview">
+			{% for item in items %}
+				<li><a href="#popup{{ item.name }}" data-rel="popup" data-position-to="window" data-theme="b" data-inline="true">{{ item.name }} Snapshot</a></li>
+			{% endfor %}
+			</ul>
+		{% for item in items %}
+			<div data-role="popup" id="popup{{ item.name }}" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15" >
+				<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+				<img src="{{ item.snapshot }}" alt="{{ item.name }} Snapshot">
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endblock content %} 
+
+{% block footer %}
+   <div data-role="footer" data-position="fixed" class="ui-bar">
+		<a href="{{ url_for('logout') }}" data-role="button" data-icon="minus" data-iconpos="right">{{ current_user.name }}</a>
+   </div>
+{% endblock footer %}

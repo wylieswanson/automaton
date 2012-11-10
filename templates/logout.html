@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block pageid -%}{{ super() }}-logout{% endblock pageid %}
+{% block header %}
+   <div data-role="header" data-position="fixed">
+      <h1>Automaton</h1>
+   </div>
+{% endblock header %}
+
+{% block content %}
+<a href="{{ url_for('login') }}" data-role="button" data-inline="true" data-mini="false">Login</a>
+{% endblock content %}
